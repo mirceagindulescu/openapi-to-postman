@@ -161,7 +161,10 @@ module.exports = function (openapi, securitySet) {
             key: 'key',
             value: _.isString(securityDef.name) ? securityDef.name : '{{apiKeyName}}'
           },
-          { key: 'value', value: '{{apiKey}}' },
+          {
+            key: 'value',
+            value: _.isString(securityDef['x-postman-value']) ? securityDef['x-postman-value'] : '{{apiKey}}'
+          },
           {
             key: 'in',
             value: _.includes(['query', 'header'], securityDef.in) ? securityDef.in : 'header'

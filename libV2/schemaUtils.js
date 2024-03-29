@@ -813,6 +813,15 @@ let QUERYPARAM = 'query',
         param.examples !== undefined ||
         param.schema.examples !== undefined;
 
+    if (param['x-postman-value'] !== undefined) {
+      return param['x-postman-value'];
+    }
+    else if (param.schema['x-postman-value'] !== undefined) {
+      return _.has(param.schema['x-postman-value'], 'value') ?
+        param.schema['x-postman-value'].value :
+        param.schema['x-postman-value'];
+    }
+
     if (shouldGenerateFromExample && hasExample) {
       /**
        * Here it could be example or examples (plural)
