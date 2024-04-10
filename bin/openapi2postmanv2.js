@@ -7,6 +7,7 @@ var _ = require('lodash'),
   availableOptions = require('../lib/options').getOptions('use', { usage: ['CONVERSION'] }),
   inputFile,
   outputFile,
+  scriptFile,
   prettyPrintFlag,
   configFile,
   definedOptions,
@@ -57,6 +58,7 @@ program
   .version(require('../package.json').version, '-v, --version')
   .option('-s, --spec <spec>', 'Convert given OPENAPI 3.0.0 spec to Postman Collection v2.0')
   .option('-o, --output <output>', 'Write the collection to an output file')
+  .option('-r, --prerequest <js>', 'Inject a prerequest script to include in the collection')
   .option('-t, --test', 'Test the OPENAPI converter')
   .option('-p, --pretty', 'Pretty print the JSON file')
   .option('-i, --interface-version <interfaceVersion>', 'Interface version of convert() to be used')
@@ -84,6 +86,7 @@ program.parse(process.argv);
 
 inputFile = program.spec;
 outputFile = program.output || false;
+scriptFile = program.prerequest || false;
 testFlag = program.test || false;
 prettyPrintFlag = program.pretty || false;
 interfaceVersion = program.interfaceVersion || 'v2';
@@ -149,13 +152,31 @@ function convert(swaggerData) {
       console.log(status.reason); // eslint-disable-line no-console
       process.exit(0);
     }
-    else if (outputFile) {
+    const collection = status.output[0].data;
+
+    if (scriptFile) {
+      scriptFile = path.resolve(scriptFile);
+      const contentLines = fs.readFileSync(scriptFile, 'utf8')
+        .toString()
+        .split('\n')
+        .map((line) => { return line.replaceAll('"', '\"'); });
+
+      collection.event = [{
+        listen: 'prerequest',
+        script: {
+          type: 'text/javascript',
+          exec: contentLines
+        }
+      }];
+    }
+
+    if (outputFile) {
       let file = path.resolve(outputFile);
       console.log('Writing to file: ', prettyPrintFlag, file, status); // eslint-disable-line no-console
-      writetoFile(prettyPrintFlag, file, status.output[0].data);
+      writetoFile(prettyPrintFlag, file, collection);
     }
     else {
-      console.log(status.output[0].data); // eslint-disable-line no-console
+      console.log(collection); // eslint-disable-line no-console
       process.exit(0);
     }
   });
