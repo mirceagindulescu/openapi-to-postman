@@ -2179,11 +2179,12 @@ module.exports = {
       request.headers = _.concat(request.headers, acceptHeader);
     }
 
+    const { noResponseExamples } = context.computedOptions
     return {
       request: {
         name: requestName,
         request: Object.assign({}, request, {
-          responses
+          responses: noResponseExamples ? [] : responses
         })
       },
       collectionVariables
