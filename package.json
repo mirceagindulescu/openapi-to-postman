@@ -1,12 +1,11 @@
 {
-  "name": "openapi-to-postmanv2",
+  "name": "@mirceagindulescu/openapi-to-postmanv2",
   "version": "4.20.1",
   "description": "Convert a given OpenAPI specification to Postman Collection v2.0",
   "homepage": "https://github.com/postmanlabs/openapi-to-postman",
-  "bugs": "https://github.com/postmanlabs/openapi-to-postman/issues",
   "repository": {
     "type": "git",
-    "url": "git://github.com/postmanlabs/openapi-to-postman.git"
+    "url": "git://github.com/mirceagindulescu/openapi-to-postman.git"
   },
   "keywords": [
     "openapi",
